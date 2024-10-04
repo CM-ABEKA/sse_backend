@@ -1,3 +1,4 @@
+// SchemaTransferRequest.java (No changes in this file)
 package com.sensys.sse_engine.model;
 
 public class SchemaTransferRequest {

@@ -1,7 +1,5 @@
+// DatabaseController.java
 package com.sensys.sse_engine.controller;
-
-import java.io.IOException;
-import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,23 +21,33 @@ public class DatabaseController {
     private DatabaseService databaseService;
 
     @GetMapping("/health")
-    public String getMethodName() {
-        return "Database Check is Up";
+    public String healthCheck() {
+        return "Database service is healthy!";
     }
 
-    @PostMapping("/db_init")
+    @PostMapping("/db/migrate")
+    public ResponseEntity<String> migrateDatabase(@RequestBody DatabaseConfig config) {
+        try {
+            databaseService.migrateDatabase(config);
+            return ResponseEntity.ok("Database migrated successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body("Error during database migration: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/db/transfer")
     public ResponseEntity<String> transferSchema(@RequestBody SchemaTransferRequest request) {
         try {
-            DatabaseConfig sourceConfig = request.getSourceConfig();
-            DatabaseConfig destConfig = request.getDestConfig();
-
-            databaseService.transferSchemaUsingDump(sourceConfig, destConfig, request.isIncludeData(), request.isDropTablesIfExists());
-
-             return ResponseEntity.ok("Schema transfer completed successfully");
-    } catch (IOException | InterruptedException | SQLException e) { 
-        return ResponseEntity.status(500).body("Error during schema transfer: " + e.getMessage());
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage()); 
-    }
+            databaseService.transferSchemaUsingFlyway(
+                    request.getSourceConfig(),
+                    request.getDestConfig(),
+                    request.isDropTablesIfExists()
+            );
+            return ResponseEntity.ok("Schema transferred successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body("Error during schema transfer: " + e.getMessage());
+        }
     }
 }
