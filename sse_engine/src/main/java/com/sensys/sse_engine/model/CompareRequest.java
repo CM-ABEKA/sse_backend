@@ -5,9 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SchemaTransferRequest {
+public class CompareRequest {
     private DatabaseConfig sourceConfig;
     private DatabaseConfig destConfig;
-    private boolean includeData;
-    private boolean dropTablesIfExists;
+    private boolean compareByTableNamesOnly;
 }
