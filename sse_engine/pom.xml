@@ -74,7 +74,17 @@
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.nifi/nifi-client-dto -->
+		<dependency>
+			<groupId>org.apache.nifi</groupId>
+			<artifactId>nifi-client-dto</artifactId>
+			<version>2.0.0-M4</version>
+		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
 
 	</dependencies>
 
