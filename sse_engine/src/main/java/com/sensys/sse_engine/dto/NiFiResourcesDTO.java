@@ -1,6 +1,7 @@
 package com.sensys.sse_engine.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sensys.sse_engine.dto.enums.NiFiResourceType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,105 +13,58 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NiFiResourcesDTO {
-    
     private List<NiFiResource> resources = new ArrayList<>();
-    private boolean empty;
-    private int size;
 
     /**
-     * Get all process groups from the resources list
-     * @return List of process group resources
+     * Get all process groups
      */
     public List<NiFiResource> getProcessGroups() {
-        if (resources == null) {
-            return new ArrayList<>();
-        }
+        if (resources == null) return new ArrayList<>();
         return resources.stream()
-                .filter(resource -> resource != null && resource.isProcessGroup())
-                .collect(Collectors.toList());
+            .filter(NiFiResource::isProcessGroup)
+            .collect(Collectors.toList());
     }
 
     /**
-     * Get all processors from the resources list
-     * @return List of processor resources
+     * Get all processors
      */
     public List<NiFiResource> getProcessors() {
-        if (resources == null) {
-            return new ArrayList<>();
-        }
+        if (resources == null) return new ArrayList<>();
         return resources.stream()
-                .filter(resource -> resource != null && resource.isProcessor())
-                .collect(Collectors.toList());
+            .filter(NiFiResource::isProcessor)
+            .collect(Collectors.toList());
     }
 
     /**
      * Find a process group by name
-     * @param name The name to search for
-     * @return The process group with the matching name, or null if not found
      */
     public NiFiResource findProcessGroupByName(String name) {
-        if (resources == null || name == null) {
-            return null;
-        }
+        if (name == null) return null;
         return getProcessGroups().stream()
-                .filter(pg -> name.equals(pg.getName()))
-                .findFirst()
-                .orElse(null);
+            .filter(pg -> name.equals(pg.getName()))
+            .findFirst()
+            .orElse(null);
     }
 
     /**
      * Find a processor by name
-     * @param name The name to search for
-     * @return The processor with the matching name, or null if not found
      */
     public NiFiResource findProcessorByName(String name) {
-        if (resources == null || name == null) {
-            return null;
-        }
+        if (name == null) return null;
         return getProcessors().stream()
-                .filter(p -> name.equals(p.getName()))
-                .findFirst()
-                .orElse(null);
+            .filter(p -> name.equals(p.getName()))
+            .findFirst()
+            .orElse(null);
     }
 
     /**
-     * Get resources by their parent process group ID
-     * @param processGroupId The ID of the parent process group
-     * @return List of resources within the specified process group
+     * Find resource by ID
      */
-    public List<NiFiResource> getResourcesByProcessGroup(String processGroupId) {
-        if (resources == null || processGroupId == null) {
-            return new ArrayList<>();
-        }
+    public NiFiResource findResourceById(String id) {
+        if (id == null) return null;
         return resources.stream()
-                .filter(resource -> resource != null && 
-                        processGroupId.equals(resource.getParentProcessGroupId()))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Find a resource by its identifier
-     * @param identifier The identifier to search for
-     * @return The resource with the matching identifier, or null if not found
-     */
-    public NiFiResource findResourceByIdentifier(String identifier) {
-        if (resources == null || identifier == null) {
-            return null;
-        }
-        return resources.stream()
-                .filter(resource -> resource != null && 
-                        identifier.equals(resource.getIdentifier()))
-                .findFirst()
-                .orElse(null);
-    }
-
-    /**
-     * Set the resources list with null safety
-     * @param resources The list of resources to set
-     */
-    public void setResources(List<NiFiResource> resources) {
-        this.resources = resources != null ? resources : new ArrayList<>();
-        this.empty = this.resources.isEmpty();
-        this.size = this.resources.size();
+            .filter(r -> id.equals(r.getId()))
+            .findFirst()
+            .orElse(null);
     }
 }
